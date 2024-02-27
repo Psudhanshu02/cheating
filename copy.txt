@@ -23,3 +23,26 @@ rgb_flow = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
 
 # Save the optical flow image as a .npy file
 np.save('optical_flow_image.npy', rgb_flow)
+
+
+
+
+
+# change dimention
+import cv2
+import torch
+import torch.nn as nn
+
+# Load image
+img = cv2.imread("C:/Users/h560858/OneDrive - Honeywell/speed_detecton/vehicle-speed-estimation/1.png")
+
+# Convert the image to PyTorch tensor and add an extra dimension for batch size
+img_tensor = torch.from_numpy(img).unsqueeze(0).permute(0, 3, 1, 2).float()
+
+# Create a pointwise convolution to reduce the number of channels
+conv1x1 = nn.Conv2d(img_tensor.shape[1], 2, 1)
+
+# Apply the convolution
+output = conv1x1(img_tensor)
+
+print(output.shape)
