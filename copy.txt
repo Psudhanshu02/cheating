@@ -14,3 +14,5 @@ conv1x1.weight = nn.Parameter(weights)
 
 # Now the conv1x1 layer will use the manually set weights
 output = conv1x1(img_tensor)
+
+RuntimeError: Given groups=1, weight of size [3, 2, 1, 1], expected input[1, 3, 432, 432] to have 2 channels, but got 3 channels instead
