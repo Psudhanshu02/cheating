@@ -1,77 +1,27 @@
-import torch
-import torch.nn as nn
-import cv2
-import numpy as np
-
-# Load the model
-model = YourModelArchitecture()  # replace with your actual model class
-state_dict = torch.load('model.pth')
-model.load_state_dict(state_dict)
-model.to('cuda')
-model.eval()
-
-def compute_optical_flow_and_predict(video_path, interval=10):
-    # Open the video file
-    cap = cv2.VideoCapture(video_path)
-
-    # Get the frames per second (fps) of the video
-    fps = cap.get(cv2.CAP_PROP_FPS)
-
-    # Calculate the frame skip (number of frames to skip to get a frame every 10 seconds)
-    frame_skip = int(fps * interval)
-
-    # Initialize the previous frame
-    ret, prev_frame = cap.read()
-    prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
-
-    # List to store the predictions
-    predictions = []
-
-    frame_count = 0
-    while cap.isOpened():
-        # Read the next frame
-        ret, frame = cap.read()
-
-        if not ret:
-            break
-
-        frame_count += 1
-
-        # If the frame count is a multiple of frame_skip, compute the optical flow
-        if frame_count % frame_skip == 0:
-            # Convert the frame to grayscale
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            # Compute the optical flow
-            flow = cv2.calcOpticalFlowFarneback(prev_frame, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
-
-            # Convert flow to polar coordinates
-            magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
-
-            # Create HSV image and populate it with the optical flow data
-            hsv = np.zeros((gray.shape[0], gray.shape[1], 3), dtype=np.float32)
-            hsv[..., 0] = angle * 180 / np.pi / 2
-            hsv[..., 1] = 255
-            hsv[..., 2] = cv2.normalize(magnitude, None, 0, 255, cv2.NORM_MINMAX)
-
-            # Convert HSV to int32's
-            hsv = np.asarray(hsv, dtype= np.float32)
-            rgb_flow = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
-
-            # Convert the optical flow image to a PyTorch tensor and add a batch dimension
-            img_tensor = torch.from_numpy(rgb_flow).unsqueeze(0).permute(0, 3, 1, 2).float().to('cuda')
-
-            # Predict the speed
-            with torch.no_grad():
-                speed = model(img_tensor)
-
-            # Append the speed prediction to the list
-            predictions.append(speed.item())
-
-            # Update the previous frame
-            prev_frame = gray
-
-    # Release the video capture
-    cap.release()
-
-    return predictions
+model = EfficientNet.from_pretrained(f'efficientnet-b{v}', in_channels=in_c, num_classes=num_c)
+model.to(device)
+for epoch in range(epochs):
+    model.train()
+    running_loss = 0.0
+    for i, sample in enumerate(train_dl):
+        of_tensor = sample[0].cuda()
+        label = sample[1].float().cuda()
+        opt.zero_grad()
+        pred = torch.squeeze(model(of_tensor))
+        loss = criterion(pred, label)
+        loss.backward()
+        opt.step()
+    
+    # if(epoch==epochs-1):
+    #     torch.save(model.state_dict(),'model1.pth')
+    # validation
+    model.eval()
+    val_losses = []
+    with torch.no_grad():
+        for j, val_sample in enumerate(val_dl):
+            of_tensor = val_sample[0].cuda()
+            label = val_sample[1].float().cuda()
+            pred = torch.squeeze(model(of_tensor))
+            loss = criterion(pred, label)
+            val_losses.append(loss)
+        print(f'{epoch}: {sum(val_losses)/len(val_losses)}')
