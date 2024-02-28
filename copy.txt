@@ -1,1 +1,16 @@
-conv1x1.weight = nn.Parameter(torch.tensor([[[[0.5]]], [[[0.5]]]]))
+import torch
+import torch.nn as nn
+
+# Assume img_tensor is a 4D tensor with shape (batch_size, channels, height, width)
+img_tensor = torch.randn(1, 3, 224, 224)
+
+# Create a Conv2d layer
+conv1x1 = nn.Conv2d(img_tensor.shape[1], 2, 1)
+
+# Manually set the weights
+weights = torch.tensor([[[[0.5]]], [[[0.5]]], [[[0.5]]]])  # shape (3, 1, 1, 1)
+weights = weights.repeat(1, 2, 1, 1)  # repeat along the in_channels dimension to get shape (2, 3, 1, 1)
+conv1x1.weight = nn.Parameter(weights)
+
+# Now the conv1x1 layer will use the manually set weights
+output = conv1x1(img_tensor)
