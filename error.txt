@@ -1,3 +1,11 @@
-Error(s) in loading state_dict for EfficientNet:
-	size mismatch for _fc.weight: copying a param with shape torch.Size([1, 1280]) from checkpoint, the shape in current model is torch.Size([3, 1280]).
-	size mismatch for _fc.bias: copying a param with shape torch.Size([1]) from checkpoint, the shape in current model is torch.Size([3]).
+import torch
+import torch.nn as nn
+import cv2
+import numpy as np
+
+# Load the model
+model =  EfficientNet.from_pretrained(f'efficientnet-b{0}', in_channels=2, num_classes=3)  # replace with your actual model class
+state_dict = torch.load('/home/fatninja/Desktop/velocityEstimation/velocity_estimation_pretrained_model/model1.pth')
+model.load_state_dict(state_dict)
+model.to('cuda')
+model.eval()
