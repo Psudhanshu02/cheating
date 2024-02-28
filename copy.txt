@@ -1,22 +1,31 @@
+import torch
+import torch.nn as nn
 import cv2
 import numpy as np
 
-def compute_optical_flow(video_path, interval=3):
+# Load the model
+model = YourModelArchitecture()  # replace with your actual model class
+state_dict = torch.load('model.pth')
+model.load_state_dict(state_dict)
+model.to('cuda')
+model.eval()
+
+def compute_optical_flow_and_predict(video_path, interval=10):
     # Open the video file
     cap = cv2.VideoCapture(video_path)
 
     # Get the frames per second (fps) of the video
     fps = cap.get(cv2.CAP_PROP_FPS)
 
-    # Calculate the frame skip (number of frames to skip to get a frame every 3 seconds)
+    # Calculate the frame skip (number of frames to skip to get a frame every 10 seconds)
     frame_skip = int(fps * interval)
 
     # Initialize the previous frame
     ret, prev_frame = cap.read()
     prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
 
-    # List to store the optical flow images
-    optical_flow_images = []
+    # List to store the predictions
+    predictions = []
 
     frame_count = 0
     while cap.isOpened():
@@ -49,8 +58,15 @@ def compute_optical_flow(video_path, interval=3):
             hsv = np.asarray(hsv, dtype= np.float32)
             rgb_flow = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
 
-            # Append the optical flow image to the list
-            optical_flow_images.append(rgb_flow)
+            # Convert the optical flow image to a PyTorch tensor and add a batch dimension
+            img_tensor = torch.from_numpy(rgb_flow).unsqueeze(0).permute(0, 3, 1, 2).float().to('cuda')
+
+            # Predict the speed
+            with torch.no_grad():
+                speed = model(img_tensor)
+
+            # Append the speed prediction to the list
+            predictions.append(speed.item())
 
             # Update the previous frame
             prev_frame = gray
@@ -58,27 +74,4 @@ def compute_optical_flow(video_path, interval=3):
     # Release the video capture
     cap.release()
 
-    return optical_flow_images
-
-
-
-
-
-# change dimention
-import cv2
-import torch
-import torch.nn as nn
-
-# Load image
-img = cv2.imread("C:/Users/h560858/OneDrive - Honeywell/speed_detecton/vehicle-speed-estimation/1.png")
-
-# Convert the image to PyTorch tensor and add an extra dimension for batch size
-img_tensor = torch.from_numpy(img).unsqueeze(0).permute(0, 3, 1, 2).float()
-
-# Create a pointwise convolution to reduce the number of channels
-conv1x1 = nn.Conv2d(img_tensor.shape[1], 2, 1)
-
-# Apply the convolution
-output = conv1x1(img_tensor)
-
-print(output.shape)
+    return predictions
