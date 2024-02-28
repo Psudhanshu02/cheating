@@ -8,11 +8,9 @@ img_tensor = torch.randn(1, 3, 224, 224)
 conv1x1 = nn.Conv2d(img_tensor.shape[1], 2, 1)
 
 # Manually set the weights
-weights = torch.tensor([[[[0.5]]], [[[0.5]]], [[[0.5]]]])  # shape (3, 1, 1, 1)
-weights = weights.repeat(1, 2, 1, 1)  # repeat along the in_channels dimension to get shape (2, 3, 1, 1)
+weights = torch.tensor([[[[0.5]], [[0.5]], [[0.5]]],  # for the first output channel
+                        [[[0.5]], [[0.5]], [[0.5]]]])  # for the second output channel
 conv1x1.weight = nn.Parameter(weights)
 
 # Now the conv1x1 layer will use the manually set weights
 output = conv1x1(img_tensor)
-
-RuntimeError: Given groups=1, weight of size [3, 2, 1, 1], expected input[1, 3, 432, 432] to have 2 channels, but got 3 channels instead
