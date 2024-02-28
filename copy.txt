@@ -1,16 +1,25 @@
-import torch
-import torch.nn as nn
-
-# Assume img_tensor is a 4D tensor with shape (batch_size, channels, height, width)
-img_tensor = torch.randn(1, 3, 224, 224)
-
-# Create a Conv2d layer
-conv1x1 = nn.Conv2d(img_tensor.shape[1], 2, 1)
-
-# Manually set the weights
-weights = torch.tensor([[[[0.5]], [[0.5]], [[0.5]]],  # for the first output channel
-                        [[[0.5]], [[0.5]], [[0.5]]]])  # for the second output channel
-conv1x1.weight = nn.Parameter(weights)
-
-# Now the conv1x1 layer will use the manually set weights
-output = conv1x1(img_tensor)
+for epoch in range(epochs):
+    model.train()
+    running_loss = 0.0
+    for i, sample in enumerate(train_dl):
+        of_tensor = sample[0].cuda()
+        label = sample[1].float().cuda()
+        opt.zero_grad()
+        pred = torch.squeeze(model(of_tensor))
+        loss = criterion(pred, label)
+        loss.backward()
+        opt.step()
+    
+    if(epoch==epochs-1):
+        torch.save(model.state_dict(),'model1.pth')
+    # validation
+    model.eval()
+    val_losses = []
+    with torch.no_grad():
+        for j, val_sample in enumerate(val_dl):
+            of_tensor = val_sample[0].cuda()
+            label = val_sample[1].float().cuda()
+            pred = torch.squeeze(model(of_tensor))
+            loss = criterion(pred, label)
+            val_losses.append(loss)
+        print(f'{epoch}: {sum(val_losses)/len(val_losses)}')
