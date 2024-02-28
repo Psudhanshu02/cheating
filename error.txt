@@ -1,11 +1,2 @@
-import torch
-import torch.nn as nn
-import cv2
-import numpy as np
-
-# Load the model
-model =  EfficientNet.from_pretrained(f'efficientnet-b{0}', in_channels=2, num_classes=3)  # replace with your actual model class
-state_dict = torch.load('/home/fatninja/Desktop/velocityEstimation/velocity_estimation_pretrained_model/model1.pth')
-model.load_state_dict(state_dict)
-model.to('cuda')
-model.eval()
+Input type (torch.FloatTensor) and weight type (torch.cuda.FloatTensor) should be the same or input should be a MKLDNN tensor and weight is a dense tensor
+Output is truncated
