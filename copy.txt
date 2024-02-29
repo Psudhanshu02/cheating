@@ -24,3 +24,5 @@ for epoch in range(epochs):
             loss = criterion(pred, label)
             val_losses.append(loss)
         print(f'{epoch}: {sum(val_losses)/len(val_losses)}')
+
+ CUDA out of memory. Tried to allocate 12.00 MiB. GPU 0 has a total capacity of 15.73 GiB of which 10.56 MiB is free. Process 2083733 has 644.00 MiB memory in use. Including non-PyTorch memory, this process has 15.07 GiB memory in use. Of the allocated memory 14.66 GiB is allocated by PyTorch, and 213.15 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
