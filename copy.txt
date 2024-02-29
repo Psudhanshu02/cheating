@@ -1,4 +1,4 @@
-# Load the model
-model_path = "path_to_your_model.pth"  # replace with the path to your .pth file
-model = torch.load(model_path)
-model.eval()  # set the model to evaluation mode
+model = EfficientNet.from_pretrained(f'efficientnet-b{V}', in_channels=IN_C, num_classes=NUM_C)
+state = torch.load(MODEL_F)
+model.load_state_dict(state)
+model.to(device)
