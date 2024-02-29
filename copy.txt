@@ -1,28 +1,44 @@
-for epoch in range(epochs):
-    # torch.cuda.empty_cache()
-    model.train()
-    running_loss = 0.0
-    for i, sample in enumerate(train_dl):
-        of_tensor = sample[0].cuda()
-        label = sample[1].float().cuda()
-        opt.zero_grad()
-        pred = torch.squeeze(model(of_tensor))
-        loss = criterion(pred, label)
-        loss.backward()
-        opt.step()
-    
-    if(epoch==epochs-1):
-        torch.save(model.state_dict(),'model1.pth')
-    # validation
-    model.eval()
-    val_losses = []
-    with torch.no_grad():
-        for j, val_sample in enumerate(val_dl):
-            of_tensor = val_sample[0].cuda()
-            label = val_sample[1].float().cuda()
-            pred = torch.squeeze(model(of_tensor))
-            loss = criterion(pred, label)
-            val_losses.append(loss)
-        print(f'{epoch}: {sum(val_losses)/len(val_losses)}')
+# Load the images
+    img1 = cv2.imread(image_paths[i], cv2.IMREAD_GRAYSCALE)
+    img2 = cv2.imread(image_paths[i + 1], cv2.IMREAD_GRAYSCALE)
 
- CUDA out of memory. Tried to allocate 12.00 MiB. GPU 0 has a total capacity of 15.73 GiB of which 10.56 MiB is free. Process 2083733 has 644.00 MiB memory in use. Including non-PyTorch memory, this process has 15.07 GiB memory in use. Of the allocated memory 14.66 GiB is allocated by PyTorch, and 213.15 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+    # Compute the optical flow
+    flow = cv2.calcOpticalFlowFarneback(img1, img2, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+    # print(flow.shape)
+    # break
+
+    # Convert flow to polar coordinates
+    magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+
+    # Create HSV image and populate it with the optical flow data
+    hsv = np.zeros((img1.shape[0], img1.shape[1], 3), dtype=np.float32)
+    hsv[..., 0] = angle * 180 / np.pi / 2
+    hsv[..., 1] = 255
+    hsv[..., 2] = cv2.normalize(magnitude, None, 0, 255, cv2.NORM_MINMAX)
+
+    # Convert HSV to int32's
+    hsv = np.asarray(hsv, dtype= np.float32)
+    rgb_flow = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
+    
+    img_tensor = torch.from_numpy(rgb_flow).unsqueeze(0).permute(0, 3, 1, 2).float()
+
+    # Create a pointwise convolution to reduce the number of channels
+    
+    conv1x1 = nn.Conv2d(img_tensor.shape[1], 2, 1)
+    
+    # Manually set the weights
+    weights = torch.tensor([[[[0.5]], [[0.5]], [[0.5]]],  # for the first output channel
+                        [[[0.5]], [[0.5]], [[0.5]]]])  # for the second output channel
+    conv1x1.weight = nn.Parameter(weights)
+    #print(conv1x1.weight.shape)
+
+
+    # Apply the convolution
+    output = conv1x1(img_tensor)
+
+    output=output.detach().numpy()
+    #print(output.shape)
+    
+
+    # Save the optical flow image as a .npy file
+    #np.save(f'/home/fatninja/Desktop/velocityEstimation/velocity_estimation_pretrained_model/numpy_files/optical_flow_image_{i}.npy', output)
