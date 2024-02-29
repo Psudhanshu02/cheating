@@ -1,41 +1,8 @@
-if __name__ == "__main__":
-    # with Pool(2) as pool:
-    #     pool.map(preprocess_images, [images[:math.ceil(len(images)/2)], images[math.ceil(len(images)/2):]])
-    
-    if RUN_TRAINING:
-        print('True')
-        print(_DEVICE)
-        
-        model= DepthVelocityEstimationNet(3, depth=config.depth)
-        
-        dataset = MultiFrameDepthVideo(directory=PROCESSED_IMAGES_DIRECTORY, frame_delta=config.frame_delta, 
-                                  Y=train_labels, read_grayscale=False, depth=config.depth)
+from ultralytics import YOLO
 
-        # Creating data indices for training and validation splits:
-        dataset_size = len(dataset)
-        indices = list(range(1,dataset_size - config.frame_delta - config.depth))
-        split = int(np.floor(config.validation_split * dataset_size))
-        if config.shuffle_dataset:
-            np.random.seed(config.random_seed)
-            np.random.shuffle(indices)
-        train_indices, val_indices = indices[split:], indices[:split]
+# Load a model
+#model = YOLO("yolov8n.yaml")  # build a new model from scratch
+model = YOLO("yolov5s.pt")  # load a pretrained model (recommended for training)
 
-        train_sampler = SubsetRandomSampler(train_indices)
-        valid_sampler = SubsetRandomSampler(val_indices)
-
-        train_loader = DataLoader(dataset, batch_size=config.batch_size, sampler=train_sampler)
-        test_loader = DataLoader(dataset, batch_size=config.test_batch_size, sampler=valid_sampler)
-
-
-        optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
-        loss_fn = nn.MSELoss()
-        for epoch in range(1, config.epochs+1):
-            try:
-                train(model,epoch, _DEVICE)
-                validate(epoch, _DEVICE)
-                save_model(f"runs", model, epoch,\
-                          name= wandb.run.name if USE_WANDB else str(uuid.uuid4()))
-            except:
-                raise
-
-
+# Use the model
+model.train(data="/home/fatninja/Downloads/chess_pieces/data.yaml", epochs=10)  # train the model
