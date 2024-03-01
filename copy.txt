@@ -1,1 +1,30 @@
-export PYTHONPATH="$PWD" && python models/export.py --weights pretrained/yolov5s.pt --img 640 --batch 1
+mat1 and mat2 shapes cannot be multiplied (32x768 and 384x7680)
+
+def train(model,epoch, device):
+    print(f"running train epoch: {epoch}", flush=True)
+    model.train()
+    train_loss = 0
+    pbar = tqdm(total=len(train_indices))
+    for i, data in enumerate(train_loader):
+        x1s, x2s, labels = data[0].to(device, dtype=torch.float), \
+                            data[1].to(device, dtype=torch.float), \
+                             data[2].to(device, dtype=torch.float)
+        print(x1s.shape)
+        print(x2s.shape)
+        model=model.float()
+        preds = model(x1s, x2s)
+        
+        loss = loss_fn(preds, labels)
+        loss.backward()
+
+        optimizer.step()
+        optimizer.zero_grad()
+        
+        train_loss += loss.item()
+
+        pbar.update(config.batch_size)
+    
+    per_item_loss = train_loss / len(train_loader)
+
+    print(f"train_loss_per_item: {per_item_loss}")
+    print(f"train_loss: {train_loss}")
