@@ -1,13 +1,1 @@
-import torch
-from model import ConvBlock  # Assuming ConvBlock is your model
-
-# Load pretrained model
-model = ConvBlock()
-model.load_state_dict(torch.load("model_weights.pth"))  # Replace with your model weights
-model.eval()
-
-# Create dummy input with the same shape as your model's input
-dummy_input = torch.randn(1, 3, 224, 224)  # Replace with your input shape
-
-# Export the model to an ONNX file
-torch.onnx.export(model, dummy_input, "model.onnx")
+TypeError: torch.finfo() requires a floating point input type. Use torch.iinfo to handle 'torch.finfo'
