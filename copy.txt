@@ -1,8 +1,1 @@
-'bool' object is not callable
-from ultralytics import YOLO
-import torch
-model=YOLO("/home/fatninja/Downloads/chess_pieces/runs/detect/train/weights/best.pt")
-dummy_input=torch.rand(1,3,320,320)
-model.eval()
-
-torch.onnx.export(model,dummy_input,"yolov5.onnx",export_params=True)
+export PYTHONPATH="$PWD" && python models/export.py --weights pretrained/yolov5s.pt --img 640 --batch 1
