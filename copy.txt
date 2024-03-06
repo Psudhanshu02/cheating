@@ -1,3 +1,18 @@
+class MultiFrameDepthVideo(MultiFrameVideo):
+
+    def __init__(self, depth, **kwargs):
+        super(MultiFrameDepthVideo, self).__init__(**kwargs)
+        self.depth = depth
+
+    def get_multiple_images(self, index):
+        x1s = []
+        x2s = []
+        for i in range(index, index+self.depth):
+            x1s.append(self._img(index).T)
+            x2s.append(self._img(index + self.frame_delta).T)
+        # concat along depth
+        x1 = torch.stack([x for x in x1s], 0)
+        x2 = torch.stack([x for x in x2s], 0)
 dataset = MultiFrameDepthVideo(directory=PROCESSED_IMAGES_DIRECTORY, frame_delta=config.frame_delta, 
                                   Y=train_labels, read_grayscale=False, depth=config.depth)
 train_loader = DataLoader(dataset, batch_size=config.batch_size, sampler=train_sampler)
