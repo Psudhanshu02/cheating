@@ -1,14 +1,3 @@
-preprocess_pipeline = ProcessPipeline([
-                                       agcwd,
-                                       apply_kernel, 
-                                       crop, 
-                                       resize], 
-                            [
-                      		{"w": 0.4},
-                            {"kernel": PreProcessingDefaults.sharpening_kernel_2},
-                            {'crop_points': (
-                                PreProcessingDefaults.crop_x, 
-                                PreProcessingDefaults.crop_y),
-                             "color": True},
-                            {"factor": 1.2}])
+images = glob.glob(f"{RAW_IMAGES_DIRECTORY}/*.jpg")
+images = sorted(images, key=lambda x: int(pathlib.Path(x).stem))
 
