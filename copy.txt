@@ -1,2 +1,3 @@
-with Pool(2) as pool:
-    pool.map(preprocess_images, [images[:math.ceil(len(images)/2)], images[math.ceil(len(images)/2):]])
+dataset = MultiFrameDepthVideo(directory=PROCESSED_IMAGES_DIRECTORY, frame_delta=config.frame_delta, 
+                                  Y=train_labels, read_grayscale=False, depth=config.depth)
+train_loader = DataLoader(dataset, batch_size=config.batch_size, sampler=train_sampler)
