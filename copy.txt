@@ -1,3 +1,2 @@
-images = glob.glob(f"{RAW_IMAGES_DIRECTORY}/*.jpg")
-images = sorted(images, key=lambda x: int(pathlib.Path(x).stem))
-
+with Pool(2) as pool:
+    pool.map(preprocess_images, [images[:math.ceil(len(images)/2)], images[math.ceil(len(images)/2):]])
