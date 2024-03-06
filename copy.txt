@@ -1,6 +1,14 @@
-import wandb
-from wandb.sdk import login
-import os
-wandb.login()
-login(key=os.environ("2d41f704c63d2af786711c4d74535c8531338444"))
-wandb.init()
+preprocess_pipeline = ProcessPipeline([
+                                       agcwd,
+                                       apply_kernel, 
+                                       crop, 
+                                       resize], 
+                            [
+                      		{"w": 0.4},
+                            {"kernel": PreProcessingDefaults.sharpening_kernel_2},
+                            {'crop_points': (
+                                PreProcessingDefaults.crop_x, 
+                                PreProcessingDefaults.crop_y),
+                             "color": True},
+                            {"factor": 1.2}])
+
