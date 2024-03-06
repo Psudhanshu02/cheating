@@ -1,3 +1,5 @@
+from data import  MultiFrameDepthVideo
+dataset = MultiFrameDepthVideo(directory=PROCESSED_IMAGES_DIRECTORY,Y=[], frame_delta=1, read_grayscale=False, depth=20)
 class MultiFrameDepthVideo(MultiFrameVideo):
 
     def __init__(self, depth, **kwargs):
