@@ -1,0 +1,118 @@
+1) steps:-Rknntool kit 2 Download
+git clone https://github.com/rockchip-linux/rknn-toolkit2.git
+
+1) Rknn model zoo
+git clone https://github.com/airockchip/rknn_model_zoo.git
+
+
+2) step:- To created the environment
+conda create -n env_det
+
+3) Downloaded Rknn toolkit2 folder open in VS code.
+
+4) created environment 
+conda create -n Name of env python==3.9
+
+conda activate env_det
+
+5) To install the dependency
+
+pip install -r requirements39
+
+protobuf==3.20.3
+
+# utils
+psutil>=5.9.0
+ruamel.yaml>=0.17.4
+scipy>=1.5.4
+tqdm>=4.64.0
+opencv-python>=4.5.5.64
+fast-histogram>=0.11
+
+# base
+onnx==1.14.1
+onnxoptimizer==0.2.7
+onnxruntime==1.16.0
+torch==1.10.1
+tensorflow==2.8.0
+
+
+6) Rknn requirements
+pip install rknn_toolkit2-1.6.0+81f21f4d-cp39-cp39-linux_x86_64
+
+7) Cmake
+sudo apt update
+PWD:- qwerty@123
+
+8) Cmake
+
+sudo apt install cmake
+
+9) Downloaded the GCC Packages and store into main folder
+
+https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/aarch64-linux-gnu/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz
+
+10) NPU check on Rock board
+
+sudo sysctl kernel.dmesg_restrict=0 
+
+11) 
+dmesg | grep -i rknpu
+
+12) To checks the version related to RKNN server and run time lib
+strings /vendor/bin/rknn_server | grep -i "rknn_server version"
+strings /vendor/lib64/librknnrt.so | grep -i "librknnrt version"
+
+13) To change the dir
+cd /home/fatninja/Desktop/projects/Pundlik/Projects/rknn-toolkit2/rknpu2
+
+14) To transfer the files 
+cd /home/fatninja/Desktop/projects/Pundlik/Projects/rknn-toolkit2/rknpu2
+(env_det) fatninja@c3po:~/Desktop/projects/Pundlik/Projects/rknn-toolkit2/rknpu2$ scp /home/fatninja/Desktop/projects/Pundlik/Projects/rknn-toolkit2/rknpu2/runtime/Linux/rknn_server/aarch64/usr/bin/restart_rknn.sh /home/fatninja/Desktop/projects/Pundlik/Projects/rknn-toolkit2/rknpu2/runtime/Linux/rknn_server/aarch64/usr/bin/rknn_server /home/fatninja/Desktop/projects/Pundlik/Projects/rknn-toolkit2/rknpu2/runtime/Linux/rknn_server/aarch64/usr/bin/start_rknn.sh rock@199.63.104.51:/home/rock
+Rock_PWd:- rock
+
+15)rknpu2 enviroment update
+chmod +x /usr/bin/rknn_server
+chmod +x /usr/bin/start_rknn.sh
+chmod +x /usr/bin/restart_rknn.sh
+
+restart_rknn.sh
+
+16) implementation of YOLOv5
+cd /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/examples/yolov5/model
+
+17) For download model onnx model
+bash download_model.sh
+
+18) Runing of onnx model in linux system.
+
+python yolov5.py --model_path /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/examples/yolov5/model/yolov5s_relu.onnx --img_save
+
+
+19) Convert Onnx to rknn model.
+python convert.py /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/examples/yolov5/model/yolov5s_relu.onnx rk3568
+
+Note:- Its converted into .rknn
+
+20) To build the binary file for board
+1) cd /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo
+
+ 2) bash build-linux.sh -t rk356x -a aarch64 -d yolov5 
+ 
+ 3) Generated binary file 
+  rknn_yolov5_demo 
+ 
+21) To transfer all files in install folder into rock chip board.
+scp /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/install/rk356x_linux_aarch64/rknn_yolov5_demo/lib/librga.so /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/install/rk356x_linux_aarch64/rknn_yolov5_demo/lib/librknnrt.so /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/install/rk356x_linux_aarch64/rknn_yolov5_demo/model/bus.jpg /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/install/rk356x_linux_aarch64/rknn_yolov5_demo/model/coco_80_labels_list.txt /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/install/rk356x_linux_aarch64/rknn_yolov5_demo/model/yolov5.rknn /home/fatninja/Desktop/projects/Pundlik/Projects/rknn_model_zoo/install/rk356x_linux_aarch64/rknn_yolov5_demo/rknn_yolov5_demo rock@199.63.104.51:/home/rock
+
+
+22) On Rock board to created two folders 1) lib and model
+To copy the transfer files into lib and model.
+
+23) open terminal 
+./rknn_yolov5_demo model/yolov5s_relu.rknn model/bus.jpg
+
+24) out file stored in out.png.
+
+
+
