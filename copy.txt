@@ -1,3 +1,4 @@
 benchmark-----------0.39060(till cropping of image by yolo)
 benchmark2-----------0.389850(detection + recognition) 
 
+https://www.naukri.com/campus/contests/hiring-challenge-for-graduate-application-developer-from-thoughtworks-hiring-challenge-thoughtworks-event-31674?utm_source=manualmailerthoughtworkspromotion&utm_medium=email&utm_campaign=thoughtworks
